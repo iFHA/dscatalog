@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import dev.fernando.dscatalog.dto.CategoryDTO;
 import dev.fernando.dscatalog.repositories.CategoryRepository;
+import dev.fernando.dscatalog.services.exceptions.ResourceNotFoundException;
 
 @Service
 public class CategoryService {
@@ -19,5 +20,9 @@ public class CategoryService {
     @Transactional(readOnly = true)
     public List<CategoryDTO> findAll() {
         return this.categoryRepository.findAll().stream().map(CategoryDTO::new).toList();
+    }
+    @Transactional(readOnly = true)
+    public CategoryDTO findById(Long id) {
+        return new CategoryDTO(this.categoryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Categoria de Id = %d não encontrada!".formatted(id))));
     }
 }
