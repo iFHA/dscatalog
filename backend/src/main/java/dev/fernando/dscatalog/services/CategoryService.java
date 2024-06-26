@@ -2,12 +2,15 @@ package dev.fernando.dscatalog.services;
 
 import java.util.List;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import dev.fernando.dscatalog.dto.CategoryDTO;
 import dev.fernando.dscatalog.entities.Category;
 import dev.fernando.dscatalog.repositories.CategoryRepository;
+import dev.fernando.dscatalog.services.exceptions.DatabaseException;
 import dev.fernando.dscatalog.services.exceptions.ResourceNotFoundException;
 
 @Service
@@ -39,5 +42,15 @@ public class CategoryService {
         Category entity = this.findEntityById(id);
         entity.setName(dto.getName());
         return new CategoryDTO(this.categoryRepository.save(entity));
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS)
+    public void delete(Long id) {
+        Category entity = this.findEntityById(id);
+        try {
+            this.categoryRepository.delete(entity);
+        } catch (DataIntegrityViolationException e) {
+            throw new DatabaseException("Não foi possível excluir a categoria de id = %d, pois a mesma possui dependências!".formatted(id));
+        }
     }
 }
