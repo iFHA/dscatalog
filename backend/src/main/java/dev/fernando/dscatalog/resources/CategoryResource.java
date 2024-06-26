@@ -1,9 +1,11 @@
 package dev.fernando.dscatalog.resources;
 
 import java.net.URI;
-import java.util.List;
 
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,11 +14,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import dev.fernando.dscatalog.dto.CategoryDTO;
-import dev.fernando.dscatalog.entities.Category;
 import dev.fernando.dscatalog.services.CategoryService;
 
 @RestController
@@ -30,9 +32,15 @@ public class CategoryResource {
     }
 
     @GetMapping
-    public ResponseEntity<List<CategoryDTO>> findAll() {
+    public ResponseEntity<Page<CategoryDTO>> findAll(
+        @RequestParam(value = "page", defaultValue = "0") Integer page,
+        @RequestParam(value = "linesPerPage", defaultValue = "12") Integer linesPerPage,
+        @RequestParam(value = "orderBy", defaultValue = "name") String orderBy,
+        @RequestParam(value = "direction", defaultValue = "DESC") String direction
+    ) {
+        PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), orderBy);
         return ResponseEntity.ok(
-            this.categoryService.findAll()
+            this.categoryService.findAllPaged(pageRequest)
         );
     }
 

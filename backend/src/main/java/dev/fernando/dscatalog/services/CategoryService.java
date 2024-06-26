@@ -3,6 +3,8 @@ package dev.fernando.dscatalog.services;
 import java.util.List;
 
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +26,10 @@ public class CategoryService {
     @Transactional(readOnly = true)
     public List<CategoryDTO> findAll() {
         return this.categoryRepository.findAll().stream().map(CategoryDTO::new).toList();
+    }
+    @Transactional(readOnly = true)
+    public Page<CategoryDTO> findAllPaged(Pageable pageable) {
+        return this.categoryRepository.findAll(pageable).map(CategoryDTO::new);
     }
     protected Category findEntityById(Long id) {
         return this.categoryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Categoria de Id = %d não encontrada!".formatted(id)));
