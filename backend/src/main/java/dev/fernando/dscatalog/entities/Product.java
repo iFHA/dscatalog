@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import dev.fernando.dscatalog.dto.CategoryDTO;
+import dev.fernando.dscatalog.dto.ProductDTO;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -49,6 +51,17 @@ public class Product {
         this.price = price;
         this.imgUrl = imgUrl;
         this.date = date;
+    }
+    public Product(ProductDTO dto) {
+        this.id = dto.getId();
+        this.name = dto.getName();
+        this.description = dto.getDescription();
+        this.price = dto.getPrice();
+        this.imgUrl = dto.getImgUrl();
+        this.date = dto.getDate();
+        if(!dto.getCategories().isEmpty()) {
+            dto.getCategories().forEach(this::addCategoryDTO);
+        }
     }
 
     public Long getId() {
@@ -105,6 +118,14 @@ public class Product {
 
     public void addCategory(Category category) {
         this.categories.add(category);
+    }
+
+    public void addCategoryDTO(CategoryDTO dto) {
+        this.addCategory(new Category(dto));
+    }
+    
+    public void clearCategories() {
+        this.categories.clear();
     }
 
     @Override
