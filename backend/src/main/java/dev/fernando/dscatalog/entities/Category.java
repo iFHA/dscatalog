@@ -1,6 +1,9 @@
 package dev.fernando.dscatalog.entities;
 
 import java.time.Instant;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import dev.fernando.dscatalog.dto.CategoryDTO;
 import jakarta.persistence.Column;
@@ -8,6 +11,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -25,6 +29,9 @@ public class Category {
     private Instant createdAt;
     @Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
     private Instant updatedAt;
+
+    @ManyToMany(mappedBy = "categories")
+    private Set<Product> products = new HashSet<>();
 
     public Category(){}
 
@@ -60,6 +67,10 @@ public class Category {
 
     public Instant getUpdatedAt() {
         return updatedAt;
+    }
+
+    public Set<Product> getProducts() {
+        return Collections.unmodifiableSet(products);
     }
 
     @PrePersist

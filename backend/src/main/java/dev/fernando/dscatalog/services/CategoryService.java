@@ -56,7 +56,7 @@ public class CategoryService {
         try {
             this.categoryRepository.delete(entity);
         } catch (DataIntegrityViolationException e) {
-            throw new DatabaseException("Não foi possível excluir a categoria de id = %d, pois a mesma possui dependências!".formatted(id));
+            throw new DatabaseException("Não foi possível excluir a categoria de id = %d, pois a mesma possui vínculos!".formatted(id));
         }
     }
 }

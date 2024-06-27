@@ -22,7 +22,7 @@ public class ControllerExceptionHandler {
     }
     @ExceptionHandler(DatabaseException.class)
     public ResponseEntity<StandardError> handleDatabaseException(DatabaseException e, HttpServletRequest request) {
-        int status = HttpStatus.UNPROCESSABLE_ENTITY.value();
+        int status = HttpStatus.BAD_REQUEST.value();
         String path = request.getRequestURI();
         return ResponseEntity.status(status).body(new StandardError(status, e.getMessage(), Instant.now(), path));
     }
