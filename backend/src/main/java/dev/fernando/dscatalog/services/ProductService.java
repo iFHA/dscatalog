@@ -51,9 +51,9 @@ public class ProductService {
 
     @Transactional(propagation = Propagation.SUPPORTS)
     public void delete(Long id) {
-        Product entity = this.findEntityById(id);
+        this.findEntityById(id);
         try {
-            this.productRepository.delete(entity);
+            this.productRepository.deleteById(id);
         } catch (DataIntegrityViolationException e) {
             throw new DatabaseException("Não foi possível excluir o produto de id = %d, pois a mesma possui vínculos!".formatted(id));
         }
