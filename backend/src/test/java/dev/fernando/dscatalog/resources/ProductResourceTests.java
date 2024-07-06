@@ -1,6 +1,8 @@
 package dev.fernando.dscatalog.resources;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -21,6 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import dev.fernando.dscatalog.dto.ProductDTO;
 import dev.fernando.dscatalog.services.ProductService;
+import dev.fernando.dscatalog.services.exceptions.DatabaseException;
 import dev.fernando.dscatalog.services.exceptions.ResourceNotFoundException;
 
 @WebMvcTest(ProductResource.class)
@@ -39,12 +42,14 @@ public class ProductResourceTests {
     private ProductDTO productDTO;
 
     private Long existingId;
+    private Long dependentId;
     private Long nonExistingId;
 
     @BeforeEach
     void setup() throws Exception {
 
         existingId = 1L;
+        dependentId = 2L;
         nonExistingId = 1000L;
 
         productDTO = new ProductDTO(existingId, "teste", "teste", 2.0, null, null);
@@ -52,14 +57,35 @@ public class ProductResourceTests {
         when(productService.findAllPaged(ArgumentMatchers.any())).thenReturn(page);
         when(productService.findById(existingId)).thenReturn(productDTO);
         when(productService.findById(nonExistingId)).thenThrow(ResourceNotFoundException.class);
-
+        
         when(productService.update(ArgumentMatchers.eq(existingId), any())).thenReturn(productDTO);
         when(productService.update(ArgumentMatchers.eq(nonExistingId), any())).thenThrow(ResourceNotFoundException.class);
+        
+        doThrow(ResourceNotFoundException.class).when(productService).delete(nonExistingId);
+        doThrow(DatabaseException.class).when(productService).delete(dependentId);
+        doNothing().when(productService).delete(existingId);
     }
 
     @Test
-    void testDelete() {
-
+    void deleteShouldReturnNotFoundWhenIdDoesNotExists() throws Exception {
+        mockMvc.perform(
+            MockMvcRequestBuilders.delete("/products/{id}", nonExistingId)
+            .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+    @Test
+    void deleteShouldReturnBadRequestWhenIdIsDependent() throws Exception {
+        mockMvc.perform(
+            MockMvcRequestBuilders.delete("/products/{id}", dependentId)
+            .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+    @Test
+    void deleteShouldReturnNoContentWhenIdExists() throws Exception {
+        mockMvc.perform(
+            MockMvcRequestBuilders.delete("/products/{id}", existingId)
+            .accept(MediaType.APPLICATION_JSON)
+        ).andExpect(MockMvcResultMatchers.status().isNoContent());
     }
 
     @Test
