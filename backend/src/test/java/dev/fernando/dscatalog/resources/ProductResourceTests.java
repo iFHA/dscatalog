@@ -60,6 +60,7 @@ public class ProductResourceTests {
         
         when(productService.update(ArgumentMatchers.eq(existingId), any())).thenReturn(productDTO);
         when(productService.update(ArgumentMatchers.eq(nonExistingId), any())).thenThrow(ResourceNotFoundException.class);
+        when(productService.store(ArgumentMatchers.any())).thenReturn(productDTO);
         
         doThrow(ResourceNotFoundException.class).when(productService).delete(nonExistingId);
         doThrow(DatabaseException.class).when(productService).delete(dependentId);
@@ -117,8 +118,20 @@ public class ProductResourceTests {
     }
 
     @Test
-    void testStore() {
+    void storeShouldReturnCreated() throws Exception {
 
+        String json = objectMapper.writeValueAsString(productDTO);
+
+        mockMvc.perform(
+            MockMvcRequestBuilders.post("/products")
+            .content(json)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+        )
+        .andExpect(MockMvcResultMatchers.status().isCreated())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.id").exists())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.name").exists())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.description").exists());
     }
 
     @Test
