@@ -4,7 +4,10 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import dev.fernando.dscatalog.dto.UserDTO;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -22,10 +25,11 @@ public class User {
     private Long id;
     private String firstName;
     private String lastName;
+    @Column(unique = true)
     private String email;
     private String password;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "tb_user_role",
         joinColumns = @JoinColumn(name = "user_id"),
@@ -41,6 +45,12 @@ public class User {
         this.lastName = lastName;
         this.email = email;
         this.password = password;
+    }
+    public User(UserDTO dto) {
+        this.id = dto.getId();
+        this.firstName = dto.getFirstName();
+        this.lastName = dto.getLastName();
+        this.email = dto.getEmail();
     }
 
     public Long getId() {
@@ -89,6 +99,10 @@ public class User {
 
     public void addRole(Role role) {
         roles.add(role);
+    }
+
+    public void clearRoles() {
+        roles.clear();
     }
 
     @Override

@@ -2,6 +2,7 @@ package dev.fernando.dscatalog.entities;
 
 import java.io.Serializable;
 
+import dev.fernando.dscatalog.dto.RoleDTO;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -23,6 +24,10 @@ public class Role implements Serializable {
     public Role(Long id, String authority) {
         this.id = id;
         this.authority = authority;
+    }
+    public Role(RoleDTO dto) {
+        this.id = dto.getId();
+        this.authority = dto.getAuthority();
     }
     public Long getId() {
         return id;
