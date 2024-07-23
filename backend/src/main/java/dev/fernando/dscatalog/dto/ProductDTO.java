@@ -7,13 +7,22 @@ import java.util.List;
 
 import dev.fernando.dscatalog.entities.Category;
 import dev.fernando.dscatalog.entities.Product;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 
 public class ProductDTO {
     private Long id;
+    @Size(min = 5, max = 60, message = "Nome deve ter entre 5 e 60 caracteres!")
+    @NotBlank(message = "Nome é obrigatório!")
     private String name;
+    @NotBlank(message = "Descrição é obrigatória!")
     private String description;
+    @Positive(message = "Preço deve ser positivo!")
     private Double price;
     private String imgUrl;
+    @PastOrPresent
     private Instant date;
     private List<CategoryDTO> categories = new ArrayList<>();
 

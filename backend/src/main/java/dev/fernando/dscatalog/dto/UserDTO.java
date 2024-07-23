@@ -5,12 +5,16 @@ import java.util.HashSet;
 import java.util.Set;
 
 import dev.fernando.dscatalog.entities.User;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 
 public class UserDTO {
 
     private Long id;
+    @NotBlank(message = "Primeiro nome é obrigatório!")
     private String firstName;
     private String lastName;
+    @Email(message = "Email inválido!")
     private String email;
 
     private Set<RoleDTO> roles = new HashSet<>();

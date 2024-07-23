@@ -18,6 +18,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import dev.fernando.dscatalog.dto.UserDTO;
 import dev.fernando.dscatalog.dto.UserInsertDTO;
 import dev.fernando.dscatalog.services.UserService;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("users")
@@ -42,14 +43,14 @@ public class UserResource {
     }
 
     @PostMapping
-    public ResponseEntity<UserDTO> store(@RequestBody UserInsertDTO dto) {
+    public ResponseEntity<UserDTO> store(@RequestBody @Valid UserInsertDTO dto) {
         UserDTO userDto = this.userService.store(dto);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(userDto.getId()).toUri();
         return ResponseEntity.created(uri).body(userDto);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserDTO> update(@PathVariable Long id, @RequestBody UserDTO dto) {
+    public ResponseEntity<UserDTO> update(@PathVariable Long id, @RequestBody @Valid UserDTO dto) {
         dto = this.userService.update(id, dto);
         return ResponseEntity.ok(dto);
     }
