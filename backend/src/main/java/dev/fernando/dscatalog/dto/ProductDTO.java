@@ -1,5 +1,6 @@
 package dev.fernando.dscatalog.dto;
 
+import java.io.Serializable;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,7 +13,8 @@ import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
-public class ProductDTO {
+public class ProductDTO implements Serializable {
+    private static final long serialVersionUID = 1L;
     private Long id;
     @Size(min = 5, max = 60, message = "Nome deve ter entre 5 e 60 caracteres!")
     @NotBlank(message = "Nome é obrigatório!")
