@@ -1,5 +1,6 @@
 package dev.fernando.dscatalog.dto;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -8,8 +9,10 @@ import dev.fernando.dscatalog.entities.User;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
-public class UserDTO {
+public class UserDTO implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+    
     private Long id;
     @NotBlank(message = "Primeiro nome é obrigatório!")
     private String firstName;
