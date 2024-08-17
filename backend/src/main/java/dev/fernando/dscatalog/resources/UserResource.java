@@ -43,12 +43,12 @@ public class UserResource {
         );
     }
 
-    @PostMapping
-    public ResponseEntity<UserDTO> store(@RequestBody @Valid UserInsertDTO dto) {
-        UserDTO userDto = this.userService.store(dto);
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(userDto.getId()).toUri();
-        return ResponseEntity.created(uri).body(userDto);
-    }
+    // @PostMapping
+    // public ResponseEntity<UserDTO> store(@RequestBody @Valid UserInsertDTO dto) {
+    //     UserDTO userDto = this.userService.store(dto);
+    //     URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(userDto.getId()).toUri();
+    //     return ResponseEntity.created(uri).body(userDto);
+    // }
 
     @PutMapping("/{id}")
     public ResponseEntity<UserDTO> update(@PathVariable Long id, @RequestBody @Valid UserUpdateDTO dto) {

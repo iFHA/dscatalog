@@ -1,8 +1,12 @@
 package dev.fernando.dscatalog.entities;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import dev.fernando.dscatalog.dto.UserDTO;
 import jakarta.persistence.Column;
@@ -18,7 +22,9 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "tb_user")
-public class User {
+public class User implements UserDetails {
+    
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -128,6 +134,16 @@ public class User {
         } else if (!id.equals(other.id))
             return false;
         return true;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+       return roles;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
     }
     
 }
