@@ -1,0 +1,22 @@
+{"properties": [
+  {
+    "name": "cors.origins",
+    "type": "java.lang.String",
+    "description": "Origens aceitas"
+  },
+  {
+    "name": "security.jwt.duration",
+    "type": "java.lang.String",
+    "description": "Duração do Token JWT"
+  },
+  {
+    "name": "security.client-id",
+    "type": "java.lang.String",
+    "description": "client-id"
+  },
+  {
+    "name": "security.client-secret",
+    "type": "java.lang.String",
+    "description": "client-secret"
+  }
+]}
