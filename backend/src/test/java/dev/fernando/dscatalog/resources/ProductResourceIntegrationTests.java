@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import dev.fernando.dscatalog.TokenUtil;
 import dev.fernando.dscatalog.dto.ProductDTO;
 
 @SpringBootTest
@@ -24,11 +25,15 @@ public class ProductResourceIntegrationTests {
     private MockMvc mockMvc;
     @Autowired
     private ObjectMapper mapper;
+    @Autowired
+    private TokenUtil tokenUtil;
 
     private long existingId;
     private long nonExistingId;
     private long countTotalProducts;
     private ProductDTO productDTO;
+
+    private String username, password, bearerToken;
 
     @BeforeEach
     void setUp() throws Exception {
@@ -37,6 +42,13 @@ public class ProductResourceIntegrationTests {
         countTotalProducts = 25L;
         productDTO = new ProductDTO();
         productDTO.setName("teste");
+        productDTO.setDescription("Updated product description");
+        productDTO.setPrice(600.0);
+
+        username = "maria@gmail.com";
+		password = "123456";
+		
+		bearerToken = tokenUtil.obtainAccessToken(mockMvc, username, password);
     }
 
     @Test
@@ -61,6 +73,7 @@ public class ProductResourceIntegrationTests {
         mockMvc.perform(
             MockMvcRequestBuilders.put("/products/{id}", nonExistingId)
             .accept(MediaType.APPLICATION_JSON)
+            .header("Authorization", "Bearer " + bearerToken)
             .content(json)
             .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(MockMvcResultMatchers.status().isNotFound());
@@ -72,6 +85,7 @@ public class ProductResourceIntegrationTests {
             MockMvcRequestBuilders.put("/products/{id}", existingId)
             .accept(MediaType.APPLICATION_JSON)
             .content(json)
+            .header("Authorization", "Bearer " + bearerToken)
             .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(MockMvcResultMatchers.status().isOk())
         .andExpect(MockMvcResultMatchers.jsonPath("$.id").exists())
