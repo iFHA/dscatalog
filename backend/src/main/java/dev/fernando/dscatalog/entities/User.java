@@ -103,6 +103,11 @@ public class User implements UserDetails {
         return Collections.unmodifiableSet(roles);
     }
 
+    public boolean hasRole(String roleName) {
+        return roles.stream()
+        .anyMatch(role -> role.getAuthority().equals(roleName));
+    }
+
     public void addRole(Role role) {
         roles.add(role);
     }
