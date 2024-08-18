@@ -26,11 +26,14 @@ import dev.fernando.dscatalog.services.exceptions.ResourceNotFoundException;
 @Service
 public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public UserService(
-        UserRepository userRepository
+        UserRepository userRepository,
+        PasswordEncoder passwordEncoder
     ) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
     @Transactional(readOnly = true)
     public List<UserDTO> findAll() {
@@ -47,14 +50,14 @@ public class UserService implements UserDetailsService {
     public UserDTO findById(Long id) {
         return new UserDTO(this.findEntityById(id));
     }
-    // @Transactional
-    // public UserDTO store(UserInsertDTO dto) {
-    //     dto.setId(null);
-    //     var entity = new User();
-    //     copyDTOToEntity(dto, entity);
-    //     entity.setPassword(passwordEncoder.encode(dto.getPassword()));
-    //     return new UserDTO(this.userRepository.save(entity));
-    // }
+    @Transactional
+    public UserDTO store(UserInsertDTO dto) {
+        dto.setId(null);
+        var entity = new User();
+        copyDTOToEntity(dto, entity);
+        entity.setPassword(passwordEncoder.encode(dto.getPassword()));
+        return new UserDTO(this.userRepository.save(entity));
+    }
     @Transactional
     public UserDTO update(Long id, UserUpdateDTO dto) {
         User entity = this.findEntityById(id);
