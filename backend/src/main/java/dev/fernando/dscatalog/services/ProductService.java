@@ -1,9 +1,11 @@
 package dev.fernando.dscatalog.services;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -11,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import dev.fernando.dscatalog.dto.ProductDTO;
 import dev.fernando.dscatalog.entities.Product;
+import dev.fernando.dscatalog.projections.ProductProjection;
 import dev.fernando.dscatalog.repositories.ProductRepository;
 import dev.fernando.dscatalog.services.exceptions.DatabaseException;
 import dev.fernando.dscatalog.services.exceptions.ResourceNotFoundException;
@@ -27,8 +30,21 @@ public class ProductService {
         return this.productRepository.findAll().stream().map(ProductDTO::new).toList();
     }
     @Transactional(readOnly = true)
-    public Page<ProductDTO> findAllPaged(Pageable pageable) {
-        return this.productRepository.findAll(pageable).map(ProductDTO::new);
+    public Page<ProductDTO> findAllPaged(
+        String name,
+        String categoryIds,
+        Pageable pageable) {
+        List<Long> categoryIdsList = Arrays.asList();
+        if(!categoryIds.isEmpty()){
+            categoryIdsList = List.of(categoryIds.split(","))
+            .stream()
+            .map(Long::valueOf)
+            .toList();
+        }
+        Page<ProductProjection> productsProjectionPage = this.productRepository.searchAllProducts(categoryIdsList, name, pageable);
+        List<Long> productIds = productsProjectionPage.map(ProductProjection::getId).toList();
+        List<ProductDTO> products = productRepository.searchProductsWithCategories(productIds).stream().map(ProductDTO::new).toList();
+        return new PageImpl<>(products, productsProjectionPage.getPageable(), productsProjectionPage.getTotalElements());
     }
     protected Product findEntityById(Long id) {
         return this.productRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Produto de Id = %d não encontrada!".formatted(id)));

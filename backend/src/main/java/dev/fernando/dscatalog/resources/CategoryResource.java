@@ -2,7 +2,6 @@ package dev.fernando.dscatalog.resources;
 
 import java.net.URI;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import java.util.List;
 
 import dev.fernando.dscatalog.dto.CategoryDTO;
 import dev.fernando.dscatalog.services.CategoryService;
@@ -30,9 +30,9 @@ public class CategoryResource {
     }
 
     @GetMapping
-    public ResponseEntity<Page<CategoryDTO>> findAll(Pageable pageable) {
+    public ResponseEntity<List<CategoryDTO>> findAll() {
         return ResponseEntity.ok(
-            this.categoryService.findAllPaged(pageable)
+            this.categoryService.findAll()
         );
     }
 

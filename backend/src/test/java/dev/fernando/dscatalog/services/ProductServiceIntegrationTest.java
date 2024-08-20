@@ -46,7 +46,7 @@ public class ProductServiceIntegrationTest {
     @Test
     void findAllPagedShouldReturnPageWhenPage0Size10() {
         PageRequest pageRequest = PageRequest.of(0, 10);
-        var page = service.findAllPaged(pageRequest);
+        var page = service.findAllPaged("", "", pageRequest);
 
         Assertions.assertFalse(page.isEmpty());
         Assertions.assertEquals(0, page.getNumber());
@@ -56,14 +56,14 @@ public class ProductServiceIntegrationTest {
     @Test
     void findAllPagedShouldReturnEmptyPageWhenPageDoesNotExists() {
         PageRequest pageRequest = PageRequest.of(1, 25);
-        var page = service.findAllPaged(pageRequest);
+        var page = service.findAllPaged("", "", pageRequest);
 
         Assertions.assertTrue(page.isEmpty());
     }
     @Test
     void findAllPagedShouldReturnSortedPageWhenSortByName() {
         PageRequest pageRequest = PageRequest.of(0,10, Sort.by("name"));
-        var page = service.findAllPaged(pageRequest);
+        var page = service.findAllPaged("", "", pageRequest);
 
         Assertions.assertFalse(page.isEmpty());
         Assertions.assertEquals("Macbook Pro", page.getContent().get(0).getName());
