@@ -19,7 +19,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
         where 
             lower(a.name) like lower(concat('%', :name, '%'))
             and (:categoryId IS NULL OR b.category_id in :categoryId)
-        order by a.name
                 """,
         countQuery = """
         select count(distinct a.id)

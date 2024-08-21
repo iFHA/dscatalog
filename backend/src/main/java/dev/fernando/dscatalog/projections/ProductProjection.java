@@ -1,6 +1,7 @@
 package dev.fernando.dscatalog.projections;
 
-public interface ProductProjection {
-    Long getId();
+import dev.fernando.dscatalog.util.HasId;
+
+public interface ProductProjection extends HasId<Long> {
     String getName();
 }

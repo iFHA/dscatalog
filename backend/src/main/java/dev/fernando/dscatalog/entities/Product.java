@@ -7,6 +7,7 @@ import java.util.Set;
 
 import dev.fernando.dscatalog.dto.CategoryDTO;
 import dev.fernando.dscatalog.dto.ProductDTO;
+import dev.fernando.dscatalog.util.HasId;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -19,7 +20,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "tb_product")
-public class Product {
+public class Product implements HasId<Long> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -64,6 +65,7 @@ public class Product {
         }
     }
 
+    @Override
     public Long getId() {
         return id;
     }

@@ -17,6 +17,7 @@ import dev.fernando.dscatalog.projections.ProductProjection;
 import dev.fernando.dscatalog.repositories.ProductRepository;
 import dev.fernando.dscatalog.services.exceptions.DatabaseException;
 import dev.fernando.dscatalog.services.exceptions.ResourceNotFoundException;
+import dev.fernando.dscatalog.util.Utils;
 
 @Service
 public class ProductService {
@@ -43,8 +44,10 @@ public class ProductService {
         }
         Page<ProductProjection> productsProjectionPage = this.productRepository.searchAllProducts(categoryIdsList, name, pageable);
         List<Long> productIds = productsProjectionPage.map(ProductProjection::getId).toList();
-        List<ProductDTO> products = productRepository.searchProductsWithCategories(productIds).stream().map(ProductDTO::new).toList();
-        return new PageImpl<>(products, productsProjectionPage.getPageable(), productsProjectionPage.getTotalElements());
+        List<Product> products = productRepository.searchProductsWithCategories(productIds);
+        products = (List<Product>) Utils.replace(productsProjectionPage.getContent(), products);
+        List<ProductDTO> productDTOs = products.stream().map(ProductDTO::new).toList();
+        return new PageImpl<>(productDTOs, productsProjectionPage.getPageable(), productsProjectionPage.getTotalElements());
     }
     protected Product findEntityById(Long id) {
         return this.productRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Produto de Id = %d não encontrada!".formatted(id)));
