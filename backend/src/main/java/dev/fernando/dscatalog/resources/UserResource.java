@@ -22,7 +22,6 @@ import dev.fernando.dscatalog.dto.UserUpdateDTO;
 import dev.fernando.dscatalog.services.UserService;
 import jakarta.validation.Valid;
 
-@PreAuthorize("hasRole('ROLE_ADMIN')")
 @RestController
 @RequestMapping("users")
 public class UserResource {
@@ -31,6 +30,8 @@ public class UserResource {
     public UserResource(UserService userService) {
         this.userService = userService;
     }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping
     public ResponseEntity<Page<UserDTO>> findAll(Pageable pageable) {
         return ResponseEntity.ok(
@@ -38,6 +39,7 @@ public class UserResource {
         );
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> findById(@PathVariable Long id) {
         return ResponseEntity.ok(
@@ -52,12 +54,14 @@ public class UserResource {
         return ResponseEntity.created(uri).body(userDto);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<UserDTO> update(@PathVariable Long id, @RequestBody @Valid UserUpdateDTO dto) {
         UserDTO userDto = this.userService.update(id, dto);
         return ResponseEntity.ok(userDto);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         this.userService.delete(id);

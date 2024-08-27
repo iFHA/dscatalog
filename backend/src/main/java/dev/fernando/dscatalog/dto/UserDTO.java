@@ -74,6 +74,10 @@ public class UserDTO implements Serializable {
         this.email = email;
     }
 
+    public void clearRoles() {
+        roles.clear();
+    }
+
     public Set<RoleDTO> getRoles() {
         return Collections.unmodifiableSet(roles);
     }

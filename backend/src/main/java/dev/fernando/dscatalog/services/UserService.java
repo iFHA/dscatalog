@@ -19,6 +19,7 @@ import dev.fernando.dscatalog.dto.UserUpdateDTO;
 import dev.fernando.dscatalog.entities.Role;
 import dev.fernando.dscatalog.entities.User;
 import dev.fernando.dscatalog.projections.UserDetailsProjection;
+import dev.fernando.dscatalog.repositories.RoleRepository;
 import dev.fernando.dscatalog.repositories.UserRepository;
 import dev.fernando.dscatalog.services.exceptions.DatabaseException;
 import dev.fernando.dscatalog.services.exceptions.ResourceNotFoundException;
@@ -26,13 +27,16 @@ import dev.fernando.dscatalog.services.exceptions.ResourceNotFoundException;
 @Service
 public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
 
     public UserService(
         UserRepository userRepository,
+        RoleRepository roleRepository,
         PasswordEncoder passwordEncoder
     ) {
         this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
     }
     @Transactional(readOnly = true)
@@ -53,8 +57,10 @@ public class UserService implements UserDetailsService {
     @Transactional
     public UserDTO store(UserInsertDTO dto) {
         dto.setId(null);
+        dto.clearRoles();
         var entity = new User();
         copyDTOToEntity(dto, entity);
+        entity.addRole(roleRepository.findByAuthority("ROLE_OPERATOR").get());
         entity.setPassword(passwordEncoder.encode(dto.getPassword()));
         return new UserDTO(this.userRepository.save(entity));
     }
