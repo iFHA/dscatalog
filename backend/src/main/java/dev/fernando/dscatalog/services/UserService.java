@@ -102,4 +102,7 @@ public class UserService implements UserDetailsService {
         });
         return user;
     }
+    public boolean existsByEmail(String email) {
+        return this.userRepository.existsByEmail(email);
+    }
 }
