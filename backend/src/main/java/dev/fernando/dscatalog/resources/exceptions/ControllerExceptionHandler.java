@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import dev.fernando.dscatalog.services.exceptions.DatabaseException;
+import dev.fernando.dscatalog.services.exceptions.EmailException;
 import dev.fernando.dscatalog.services.exceptions.ResourceNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -21,6 +22,12 @@ public class ControllerExceptionHandler {
     }
     @ExceptionHandler(DatabaseException.class)
     public ResponseEntity<StandardError> handleDatabaseException(DatabaseException e, HttpServletRequest request) {
+        int status = HttpStatus.BAD_REQUEST.value();
+        String path = request.getRequestURI();
+        return ResponseEntity.status(status).body(new StandardError(status, e.getMessage(), Instant.now(), path));
+    }
+    @ExceptionHandler(EmailException.class)
+    public ResponseEntity<StandardError> handleEmailException(EmailException e, HttpServletRequest request) {
         int status = HttpStatus.BAD_REQUEST.value();
         String path = request.getRequestURI();
         return ResponseEntity.status(status).body(new StandardError(status, e.getMessage(), Instant.now(), path));
