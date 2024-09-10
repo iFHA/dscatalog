@@ -6,12 +6,15 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import dev.fernando.dscatalog.dto.EmailDTO;
+import dev.fernando.dscatalog.dto.NewPasswordDTO;
 import dev.fernando.dscatalog.dto.RecoverTokenDTO;
 import dev.fernando.dscatalog.entities.PasswordRecover;
+import dev.fernando.dscatalog.entities.User;
 import dev.fernando.dscatalog.repositories.PasswordRecoverRepository;
 import dev.fernando.dscatalog.repositories.UserRepository;
 import dev.fernando.dscatalog.services.exceptions.ResourceNotFoundException;
@@ -29,6 +32,8 @@ public class AuthService {
     private PasswordRecoverRepository passwordRecoverRepository;
     @Autowired
     private EmailService emailService;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Transactional
     public String createRecoverToken(RecoverTokenDTO dto) {
@@ -52,5 +57,16 @@ public class AuthService {
         emailService.send(new EmailDTO(dto.email(), "Recuperação de senha", body));
 
         return "";
+    }
+    
+    @Transactional
+    public void saveNewPassword(NewPasswordDTO dto) {
+        var result = this.passwordRecoverRepository.searchValidTokens(dto.getToken(), Instant.now());
+        if (result.isEmpty()) {
+            throw new ResourceNotFoundException("Token inválido!");
+        }
+        User user = result.get(0).getUser();
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        userRepository.save(user);
     }
 }
