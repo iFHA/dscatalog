@@ -2,11 +2,16 @@ package dev.fernando.dscatalog.services;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -68,5 +73,16 @@ public class AuthService {
         User user = result.get(0).getUser();
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
         userRepository.save(user);
+    }
+    protected User authenticated() {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            Jwt principal = (Jwt) authentication.getPrincipal();
+            String username = principal.getClaim("username");
+            return this.userRepository.findByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário %s não encontrado!".formatted(username)));
+        } catch (Exception e) {
+            throw new UsernameNotFoundException("Usuário inválido! " + e.getMessage());
+        }
     }
 }

@@ -46,6 +46,13 @@ public class UserResource {
             this.userService.findById(id)
         );
     }
+    @PreAuthorize("hasAnyRole('ROLE_OPERATOR', 'ROLE_ADMIN')")
+    @GetMapping("me")
+    public ResponseEntity<UserDTO> getLoggedUser() {
+        return ResponseEntity.ok(
+            this.userService.getLoggedUser()
+        );
+    }
 
     @PostMapping
     public ResponseEntity<UserDTO> store(@RequestBody @Valid UserInsertDTO dto) {

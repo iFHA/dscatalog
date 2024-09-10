@@ -29,15 +29,18 @@ public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AuthService authService;
 
     public UserService(
         UserRepository userRepository,
         RoleRepository roleRepository,
-        PasswordEncoder passwordEncoder
+        PasswordEncoder passwordEncoder,
+        AuthService authService
     ) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
+        this.authService = authService;
     }
     @Transactional(readOnly = true)
     public List<UserDTO> findAll() {
@@ -53,6 +56,10 @@ public class UserService implements UserDetailsService {
     @Transactional(readOnly = true)
     public UserDTO findById(Long id) {
         return new UserDTO(this.findEntityById(id));
+    }
+    @Transactional(readOnly = true)
+    public UserDTO getLoggedUser() {
+        return new UserDTO(this.authService.authenticated());
     }
     @Transactional
     public UserDTO store(UserInsertDTO dto) {
